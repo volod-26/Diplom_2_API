@@ -1,7 +1,7 @@
 import requests
 import pytest
 import allure
-from config import REGISTER_ENDPOINT
+from config import REGISTER_ENDPOINT, LOGIN_ENDPOINT, USER_ENDPOINT
 import helpers
 
 
@@ -14,11 +14,18 @@ class TestRegistration:
         password = helpers.generate_random_string(10)
         name = helpers.generate_random_string(10)
         payload = {"email": email, "password": password, "name": name}
-        
+
         response = requests.post(REGISTER_ENDPOINT, json=payload)
         assert response.status_code == 200
         assert response.json()["success"] is True
         assert "accessToken" in response.json()
+
+        # Удаляем пользователя после теста
+        login_response = requests.post(LOGIN_ENDPOINT, json={"email": email, "password": password})
+        if login_response.status_code == 200:
+            token = login_response.json().get("accessToken")
+            if token:
+                requests.delete(USER_ENDPOINT, headers={"Authorization": token})
 
     @allure.title("Проверка создания пользователя, который уже зарегистрирован")
     def test_create_existing_user(self, create_user):
