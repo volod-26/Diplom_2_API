@@ -1,17 +1,17 @@
 import random
 import string
 import requests
-from config import REGISTER_ENDPOINT, LOGIN_ENDPOINT
+import allure
+from config import REGISTER_ENDPOINT
 
 
 def generate_random_string(length):
-    """Генерирует случайную строку из букв нижнего регистра"""
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
 
 
+@allure.step("Регистрация нового пользователя")
 def register_new_user_and_return_login_password():
-    """Регистрирует нового пользователя и возвращает [email, password, name]"""
     login_pass = []
     email = f"{generate_random_string(10)}@yandex.ru"
     password = generate_random_string(10)

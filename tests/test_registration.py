@@ -20,12 +20,9 @@ class TestRegistration:
         assert response.json()["success"] is True
         assert "accessToken" in response.json()
 
-        # Удаляем пользователя после теста
         login_response = requests.post(LOGIN_ENDPOINT, json={"email": email, "password": password})
-        if login_response.status_code == 200:
-            token = login_response.json().get("accessToken")
-            if token:
-                requests.delete(USER_ENDPOINT, headers={"Authorization": token})
+        token = login_response.json().get("accessToken")
+        requests.delete(USER_ENDPOINT, headers={"Authorization": token})
 
     @allure.title("Проверка создания пользователя, который уже зарегистрирован")
     def test_create_existing_user(self, create_user):
